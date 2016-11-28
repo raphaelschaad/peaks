@@ -1,0 +1,234 @@
+body {
+  /* remove any browser margin around the p5js sketch */
+  padding: 0px;
+  margin: 0px;
+
+  background-color: #171613;
+
+  /* default text settings */
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1.4;
+  color: hsla(40, 8%, 100%, 0.3);
+}
+
+canvas {
+  /* avoid slight vertical scroll if the canvas is full screen */
+  vertical-align: top;
+}
+
+b {
+  color: hsla(40, 8%, 100%, 0.5);
+  /* Type weight 100-900 in 100 increments; Medium is 500: http://www.webtype.com/info/articles/fonts-weights/ */
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+#centerContainer {
+  /* Center horizontally and vertically */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  /* This to solve "the content will not be cut when the window is smaller than the content" */
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+
+  /* This surpresses unneeded scrollbars that show up when adding siblings to the canvas in the div */
+  overflow: hidden;
+}
+
+#showPerSpeakersDiv, #showInFeetDiv {
+  text-align: right;
+}
+
+.about a {
+  /* Be explicit because Bootstrap defaults to blue links without underline */
+  color: hsla(40, 8%, 100%, 0.3);
+  text-decoration: underline;
+  /* Because Bootstrap returns focus to the calling element, the outline highlight was irritating on closing modal */
+  outline: none;
+}
+
+.storytitle {
+  font-size: 14px;
+  font-weight: 300;
+  border-bottom: 1px solid;
+  line-height: 1.8;
+}
+
+/* Prefix with "peaks-" to avoid collison with ".label" class from Bootstrap. */
+.peaks-label {
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 0.7px;
+}
+
+.number {
+  float: right;
+  font-size: 14px;
+  font-weight: 100;
+  margin-top: -1px;
+
+  /* Oldstyle figures https://helpx.adobe.com/typekit/using/open-type-syntax.html#onum */
+  /* Not available for Helvetica */
+  /*font-variant-numeric: oldstyle-nums;
+  -moz-font-feature-settings: "onum";
+  -webkit-font-feature-settings: "onum";
+  font-feature-settings: "onum";*/
+
+  /* Tabular figures https://helpx.adobe.com/typekit/using/open-type-syntax.html#tnum */
+  /* default for Helvetica */
+  /*font-variant-numeric: tabular-nums;
+  -moz-font-feature-settings: "tnum";
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum";*/
+}
+
+/* Safari 9.0+ */
+_::-webkit-:not(:root:root), .safari_only_number {
+  /* Adjust for the font-weight appearing much lighter in Safari */
+  font-weight: 200;
+}
+
+.originstory {
+  line-height: 2.2;
+  margin-top: -3px;
+}
+
+.altitude {
+  font-size: 9px;
+}
+
+.tag {
+  background-color: #080707;
+  border-radius: 3px;
+  padding: 4px 4px 4px 4px;
+  margin: 0px 1px 0px 1px;
+
+  color: hsla(40, 8%, 100%, 0.5);
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+.cursorpopup {
+  background-color: hsla(0, 0%, 0%, 0.8);
+  border-radius: 3px;
+  line-height: 1.3;
+  padding: 4px 7px 4px 7px;
+
+  /* CW orientation */
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+
+  /* top left */
+  -webkit-transform-origin: 0% 50%;
+  -moz-transform-origin: 0% 50%;
+  -ms-transform-origin: 0% 50%;
+  -o-transform-origin: 0% 50%;
+  transform-origin: 0% 50%;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.underlined {
+  border-bottom: 1px dashed;
+}
+
+.hoverable {
+  cursor: pointer;
+}
+
+.rotated {
+  /* CW orientation */
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+
+  /* top left */
+  -webkit-transform-origin: 0% 0%;
+  -moz-transform-origin: 0% 0%;
+  -ms-transform-origin: 0% 0%;
+  -o-transform-origin: 0% 0%;
+  transform-origin: 0% 0%;
+}
+
+.noselect {
+  /* http://stackoverflow.com/questions/826782/css-rule-to-disable-text-selection-highlighting */
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently not supported by any browser */
+}
+
+/* Bootstrap modal */
+.modal {
+  color: hsla(230, 7%, 17%, 1);
+}
+
+.modal-dialog {
+  width: 768px;
+}
+
+.modal-content {
+  background-color: hsla(230, 3%, 97%, 1);
+}
+
+.modal-header, .modal-footer {
+  border-color: #hsla(0, 0%, 80%, 1);
+}
+
+.modal-title, .modal-body {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.modal-title, .modal-body h2 {
+  font-size: 20px;
+}
+
+.modal-body h2 {
+  margin-top: 24px;
+}
+
+.modal-body p {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 16px;
+  line-height: 175%;
+}
+
+.modal-body img {
+  max-width: 100%;
+  padding-top: 4px;
+  padding-bottom: 14px;
+}
+
+.modal-body .inset {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
+.modal-footer .footer-text {
+  position: fixed;
+  left: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-default {
+  /* Fix footer label overlapping close button and hence blocking hover */
+  position: relative;
+}
