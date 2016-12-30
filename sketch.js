@@ -1163,7 +1163,7 @@ var aliasesForColorNames = {
   "red": ["rot", "rouge", "rosso", "cotschen", "cotschna"],
   "black": ["schwarz", "noir", "nero", "nair"]
 };
-// Look at nameContainsMatchStrings() for a list of exclusions
+// See nameContainsMatchStrings() for a list of exclusions
 
 
 /*
