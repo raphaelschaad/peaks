@@ -102,7 +102,7 @@ function setup() {
   select("#centerContainer").size(width, height);
 
   // Precalculate stuff
-  // NOTE: Don't ever ever create p5 color() in draw() -- it's so expensive ... *(re)setting* color (stroke, fill) is surprisingly cheap.
+  // Don't ever ever create p5 color() in draw() -- it's so expensive ... *(re)setting* color (stroke, fill) is surprisingly cheap.
   // Use the keyColors for key (legend) and other UI elements
   var keyColorIdx = 5;
   var keyColorSaturationFactor = 0.9;
@@ -454,8 +454,8 @@ function draw() {
       cursorPopupDiv.hide();
     }
     noStroke();
-    // NOTE: has to be even (e.g. 4) for ellipse and stroke to line up
     var diameter = 2;
+    // Has to be even (e.g. 4) for ellipse and stroke to perfectly line up
     strokeWeight(diameter);
     var highlightShadowOffset = 1.5;
     var hoverPeaks = [];
@@ -485,7 +485,7 @@ function draw() {
       shouldColor &= checkboxesForTypes[type].isChecked;
       shouldColor &= (z >= altitudeControl.minValue() && z <= altitudeControl.maxValue());
       if (shouldColor) {
-        // NOTE: here we simplify a bit and just grab the first language
+        // Here we simplify a bit and just grab the first language
         var colorLang = colors[checkedLangs[0]];
         var colorIndex = round(map(z, data.zMax, data.zMin, 0, colorLang.length - 1));
         var col = colorLang[colorIndex];
@@ -511,7 +511,7 @@ function draw() {
         }
 
         // Mouse Interaction
-        // NOTE: I investigated bulge effect and it looks cool but it then gets hard to point to a particular peak
+        // I investigated bulge effect and it looks cool but it then gets hard to point to a particular peak
         var distance = dist(x, y, mouseX-2, mouseY-6);
         if (distance < interactionDistance) {
           // Associate value (for highlight)
@@ -523,7 +523,7 @@ function draw() {
         col = darkColor;
       }
       fill(col);
-      // NOTE: moving from ellipse to point didn't do anything to performance
+      // Moving from ellipse to point didn't do anything to performance
       ellipse(x, y, diameter, diameter);
     }
   }
@@ -1218,7 +1218,7 @@ function keyReleased() {
   else if (key == "s" || key == "S") {
     // [s]creenshot -- will get prompted by browser to download
     saveCanvas("screenshot@2x", "png");
-    // NOTE: there is also `save()`, which simply calls `saveCanvas()` under the hood for images
+    // There is also `save()`, which simply calls `saveCanvas()` under the hood for images
   } else if (key == "m" || key == "M") {
     // [m]ovie -- auto-downloading multiple files works in Chrome but not in Safari
     var filename = "frame"; // will be suffixed (before extension but after e.g. '@2x'-part) with a zero-based index w/o leading zeros; can't auto-create a folder a la adding 'output/' to path
