@@ -126,9 +126,9 @@ function setup() {
     for (var i = 0; i < langColors.length; i++) {
       var col = langColors[i];
       // Pre-calculate shadow colors
-      shadowColorsForColors[col] = color("hsba(" + round(hue(col)) + ", " + 6 + "%, " + 5 + "%, " + 0.2 + ")");
+      shadowColorsForColors[col] = color("hsba(" + round(hue(col)) + ", " + 6 + "%, " + 5 + "%, " + 0.25 + ")");
       // Pre-calculate hover colors
-      hoverColorsForColors[col] = color("hsba(" + round(hue(col)) + ", " + round(saturation(col)) + "%, " + round(brightness(col)*0.64) + "%, " + 0.2 + ")");
+      hoverColorsForColors[col] = color("hsba(" + round(hue(col)) + ", " + round(saturation(col)) + "%, " + round(brightness(col)*0.64) + "%, " + 0.15 + ")");
     }
   }
 
