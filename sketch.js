@@ -297,7 +297,7 @@ function draw() {
     strokeCap(SQUARE);
     var yAdjustment = -9;
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 3;
-    var y = grid.margin.top + grid.rowheight() * 21 + yAdjustment;
+    var y = grid.margin.top + grid.rowheight() * (grid.nrow - 7) + yAdjustment;
     var w = 30;
     var h = 15;
     var xRunning = x;
@@ -355,7 +355,7 @@ function draw() {
   {
     var yAdjustment = -3;
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 3;
-    var y = grid.margin.top + grid.rowheight() * 24 + yAdjustment;
+    var y = grid.margin.top + grid.rowheight() * (grid.nrow - 4) + yAdjustment;
     var w = 50;
     var h = 25;
     var wDecrement = 10;
@@ -421,7 +421,7 @@ function draw() {
   {
     var yAdjustment = 5;
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 3;
-    var y = grid.margin.top + grid.rowheight() * 26 + yAdjustment;
+    var y = grid.margin.top + grid.rowheight() * (grid.nrow - 2) + yAdjustment;
     var yRunning = y;
     var w = 120;
     var h = 2;
@@ -606,14 +606,14 @@ function draw() {
   }
 
 
-  var storiesStartRows = 22;
+  var storiesStartRow = grid.nrow - 6;
   var storyTitleYAdjustment = -12;
   var rulerWidth = 1;
   noStroke();
   // Story 1: Language Share of Peak Names
   {
     var x = grid.margin.left;
-    var y = grid.margin.top + grid.rowheight() * storiesStartRows;
+    var y = grid.margin.top + grid.rowheight() * storiesStartRow;
     var yRunning = y;
 
     if (!languageShareTitleDiv) {
@@ -734,7 +734,7 @@ function draw() {
   // Story 2: Most Common Peak Names
   {
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 1;
-    var y = grid.margin.top + grid.rowheight() * storiesStartRows;
+    var y = grid.margin.top + grid.rowheight() * storiesStartRow;
     var yRunning = y;
 
     if (!topNamesTitleDiv) {
@@ -784,7 +784,7 @@ function draw() {
   // Story 3:
   {
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 2;
-    var y = grid.margin.top + grid.rowheight() * storiesStartRows;
+    var y = grid.margin.top + grid.rowheight() * storiesStartRow;
     var yRunning = y;
 
     if (!nameOriginTitleDiv) {
