@@ -693,8 +693,8 @@ function draw() {
       var yTarget = round(yRunning);
       var y = yCurrent;
       var yDiff = yCurrent - yTarget;
-      // The 640 check avoids animating in the very first loop
-      if (yCurrent !== 640 && abs(yDiff) >= yStep) {
+      // The height-check avoids animating in the very first loop
+      if (yCurrent !== height && abs(yDiff) >= yStep) {
         // We have animation to do
         y = yCurrent + (yDiff > 0 ? -yStep : yStep);
         div["animating"] = true;
