@@ -1,7 +1,7 @@
 "use strict";
 
 // {
-// 	 "id": "...",
+//   "id": "...",
 //   "type": "gipfel",
 //   "name": {
 //     "de": ["name1", "name2"],
@@ -244,7 +244,7 @@ function draw() {
 
 
   // Animation
-  if (previousTime == undefined) {
+  if (previousTime === undefined) {
     previousTime = millis();
   }
   var currentTime = millis();
@@ -304,7 +304,7 @@ function draw() {
     var leftMargin = 1;
     var bottomMargin = 6;
     if (!checkboxesForLangs) {
-      checkboxesForLangs = {}
+      checkboxesForLangs = {};
       for (var lang in namesForLangs) {
         var name = namesForLangs[lang];
         var div = createDiv(name.toUpperCase()).id(lang).parent("centerContainer");
@@ -364,7 +364,7 @@ function draw() {
     var leftMargin = 1;
     var bottomMargin = 6;
     if (!checkboxesForTypes) {
-      checkboxesForTypes = {}
+      checkboxesForTypes = {};
       var types = Object.keys(namesForTypes).reverse();
       for (var i = 0; i < types.length; i++) {
         var type = types[i];
@@ -496,7 +496,7 @@ function draw() {
         var shouldHighlight = false;
         for (var j = 0; j < highlightedPeaks.length; j++) {
           var highlightedPeak = highlightedPeaks[j];
-          if (peak.id == highlightedPeak.id) {
+          if (peak.id === highlightedPeak.id) {
             shouldHighlight = true;
             break;
           }
@@ -543,7 +543,7 @@ function draw() {
   }
 
   // Idle animation
-  if (isHighlighting == false && hoverPeaks.length == 0) {
+  if (isHighlighting === false && hoverPeaks.length === 0) {
     // Count down
     idleHoverRemaining -= elapsedTime;
     if (idleHoverRemaining <= 0) {
@@ -647,7 +647,7 @@ function draw() {
 
     // Create divs with content
     var langCounts = data.langCounts.slice(0);
-    if (languagesDivs.length == 0) {
+    if (languagesDivs.length === 0) {
       for (var i = 0; i < langCounts.length; i++) {
         var langCount = langCounts[i];
         var lang = Object.keys(langCount)[0];
@@ -694,7 +694,7 @@ function draw() {
       var y = yCurrent;
       var yDiff = yCurrent - yTarget;
       // The 640 check avoids animating in the very first loop
-      if (yCurrent != 640 && abs(yDiff) >= yStep) {
+      if (yCurrent !== 640 && abs(yDiff) >= yStep) {
         // We have animation to do
         y = yCurrent + (yDiff > 0 ? -yStep : yStep);
         div["animating"] = true;
@@ -745,7 +745,7 @@ function draw() {
     topNamesTitleDiv.position(x, y+storyTitleYAdjustment);
     yRunning += grid.rowheight();
 
-    if (topNamesDivs.length == 0) {
+    if (topNamesDivs.length === 0) {
       for (var i = 0; i < data.topNames.length; i++) {
         var nameCount = data.topNames[i];
         var name = Object.keys(nameCount)[0];
@@ -770,13 +770,13 @@ function draw() {
     var xRunning = x;
     for (var i = 0; i < topNamesDivs.length; i++) {
       // Second col
-      if (i == floor(topNamesDivs.length / 2)) {
+      if (i === floor(topNamesDivs.length / 2)) {
         xRunning += grid.colwidth() - secondColWidthMax;
         yRunning = y + grid.rowheight();
       }
       var div = topNamesDivs[i];
       div.position(xRunning, yRunning);
-      yRunning +=  grid.rowheight();
+      yRunning += grid.rowheight();
     }
   }
 
@@ -837,15 +837,15 @@ function displayPopupForPeak(peak) {
     var lang = peakNameLangs[i];
     var names = peak.name[lang];
     if (Array.isArray(names)) {
-     // We know there's only ever 2 names in the same language and so simplify a bit here (there's 7 such peaks btw.)
-     var name = names[0] + "&nbsp;(" + names[1] + ")";
-     displayNames.push("<b>" + name + "</b>");
+      // We know there's only ever 2 names in the same language and so simplify a bit here (there's 7 such peaks btw.)
+      var name = names[0] + "&nbsp;(" + names[1] + ")";
+      displayNames.push("<b>" + name + "</b>");
     } else {
-     var name = names;
-     if (peakNameLangs.length > 1) {
-       name = name + "&nbsp;<span style=\"color: " + keyColors[lang] + "; vertical-align: middle;\">•</span>";
-     }
-     displayNames.push("<b>" + name + "</b>");
+      var name = names;
+      if (peakNameLangs.length > 1) {
+        name = name + "&nbsp;<span style=\"color: " + keyColors[lang] + "; vertical-align: middle;\">•</span>";
+      }
+      displayNames.push("<b>" + name + "</b>");
     }
   }
   displayNames[0] += "&nbsp;&nbsp;&nbsp;" + round(shouldShowInFeet ? peak.z / metersPerFoot : peak.z).toLocaleString() + altitudeUnitString();
@@ -1013,13 +1013,13 @@ function peaksMatchingName(matchName) {
       if (Array.isArray(names)) {
         for (var k = 0; k < names.length; k++) {
           var name = names[k];
-          if (name == matchName) {
+          if (name === matchName) {
             matches.push(peak);
           }
         }
       } else {
         var name = names;
-        if (name == matchName) {
+        if (name === matchName) {
           matches.push(peak);
         }
       }
@@ -1056,11 +1056,11 @@ function peaksContainingStrings(matchStrings) {
 
 function nameContainsMatchStrings(name, matchStrings) {
   // Bail for some bad string matches (exclusions)
-  if (name == "Grotzligütsch" ||
-      name == "Piz&nbsp;Rots" ||
-      name == "Parrotspitze" || name == "Punta&nbsp;Parrot" ||
-      name == "Piz&nbsp;dil&nbsp;Crot" ||
-      name == "Pizzo&nbsp;Crotto") {
+  if (name === "Grotzligütsch" ||
+      name === "Piz&nbsp;Rots" ||
+      name === "Parrotspitze" || name === "Punta&nbsp;Parrot" ||
+      name === "Piz&nbsp;dil&nbsp;Crot" ||
+      name === "Pizzo&nbsp;Crotto") {
     return false;
   }
   return matchStrings.some(function(matchString, index, matchStrings) {
@@ -1080,12 +1080,12 @@ function updateHighlightedPeakCurrentPopup() {
       var containsLastPopupPeak = false;
       for (var i = 0; i < highlightedPeaks.length; i++) {
         var highlightedPeak = highlightedPeaks[i];
-        if (highlightedPeak.id == highlightedPeakCurrentPopup.id) {
+        if (highlightedPeak.id === highlightedPeakCurrentPopup.id) {
           containsLastPopupPeak = true;
           break;
         }
       }
-      if (containsLastPopupPeak == false) {
+      if (containsLastPopupPeak === false) {
         setHighlightedPeakCurrentPopupToFirstColoredPeak(0);
       }
     }
@@ -1114,11 +1114,11 @@ function isRetina() {
 
 // The paddings are with respect to the peaks, not the topo.
 var peaksPadding = {
-   "left": 45,
-   "right": 87,
-   "top": 113,
-   "bottom": 187
- };
+  "left": 45,
+  "right": 87,
+  "top": 113,
+  "bottom": 187
+};
 
 var namesForLangs = {
   "de": "German",
@@ -1131,7 +1131,7 @@ var speakersForLangs = {
   "de": 5092279,
   "fr": 1822187,
   "it": 655236,
-  "rm": 42410,
+  "rm": 42410
 };
 
 var namesForTypes = {
