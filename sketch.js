@@ -827,9 +827,11 @@ function draw() {
   }
 }
 
+
 /*
  * Cursor popup
  */
+
 function displayPopupForPeak(peak) {
   var displayNames = [];
   var peakNameLangs = Object.keys(peak.name);
@@ -863,6 +865,7 @@ function displayPopupForPeak(peak) {
 /*
  * Altitude Slider
  */
+
 function RangeControl(x, y, w, h, knobWidth, knobHeight, min, max) {
   this.x = x;
   this.y = y;
@@ -935,6 +938,7 @@ function Knob(x, y, w, h) {
 /*
  * Mouse Events
  */
+
 function mousePressed() {
   if (altitudeControl.knobMin.isClicked()) {
     altitudeControl.knobMin.isOn = true;
