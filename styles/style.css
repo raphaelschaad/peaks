@@ -232,3 +232,40 @@ _::-webkit-:not(:root:root), .safari_only_number {
   /* Fix footer label overlapping close button and hence blocking hover */
   position: relative;
 }
+
+/* Poor man's responsive font sizes */
+@media only screen and (min-width: 1400px) {
+  body {
+    font-size: 11px;
+  }
+  .storytitle {
+    font-size: 15px;
+  }
+  .peaks-label {
+    font-size: 8px;
+  }
+  .number {
+    font-size: 15px;
+  }
+  .altitude {
+    font-size: 10px;
+  }
+}
+
+@media only screen and (min-width: 1600px) {
+  body {
+    font-size: 12px;
+  }
+  .storytitle {
+    font-size: 16px;
+  }
+  .peaks-label {
+    font-size: 9px;
+  }
+  .number {
+    font-size: 16px;
+  }
+  .altitude {
+    font-size: 11px;
+  }
+}

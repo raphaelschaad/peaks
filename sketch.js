@@ -92,16 +92,39 @@ var secondColWidthMax = -Infinity;
 var nameOriginTitleDiv;
 var nameOriginTextDiv;
 
+// Scaling
+var s;
+var sMin = 1;
+var sMax = 1.3;
+
+function calcSize() {
+  s = map(windowWidth, 1280, 1680, sMin, sMax);
+  s = constrain(s, sMin, sMax);
+  return {w: round(1024*s), h: round(640*s)};
+}
+
+function windowResized() {
+  var size = calcSize();
+  resizeCanvas(size.w, size.h);
+  select("#centerContainer").size(width, height);
+  // Pre-project country line and pre-calculate length of altitude lines
+  mapCoord();
+}
+
 
 /*
  * Setup
  */
 
 function setup() {
-  createCanvas(1024, 640).parent("centerContainer");
+  var size = calcSize();
+  createCanvas(size.w, size.h).parent("centerContainer");
   select("#centerContainer").size(width, height);
 
   // Precalculate stuff
+  // Pre-project country line and pre-calculate length of altitude lines
+  mapCoord();
+
   // Don't ever ever create p5 color() in draw() -- it's so expensive ... *(re)setting* color (stroke, fill) is surprisingly cheap.
   // Use the keyColors for key (legend) and other UI elements
   var keyColorIdx = 5;
@@ -141,34 +164,6 @@ function setup() {
   pressedColor = color("hsla(40, 10%, 100%, 0.2)");
   highlightShadowColor = color("hsla(0, 0%, 0%, 0.5)");
 
-  // Pre-project and flatten array of coordinates
-  var countryLine = topojson.feature(topo, topo.objects.ch);
-  for (var i = 0; i < countryLine.features.length; i++) {
-    var feature = countryLine.features[i];
-    var coords = feature.geometry.coordinates;
-    var lineSegments = [];
-    for (var j = 0; j < coords.length; j++) {
-      var coord = coords[j];
-      var x = mapCoordX(coord[0]);
-      var y = mapCoordY(coord[1]);
-      lineSegments.push(x);
-      lineSegments.push(y);
-    }
-    countryLines.push(lineSegments);
-  }
-
-  var lengthMin = 3;
-  var lengthMax = 140;
-  for (var i = 0; i < data.peaks.length; i++) {
-    var peak = data.peaks[i];
-    // Pre-calculate length of altitude lines
-    peak["length"] = map(peak.z, data.zMin, data.zMax, lengthMin, lengthMax);
-
-    // Pre-project peak E & N to X & Y
-    peak["x"] = mapCoordX(peak.e);
-    peak["y"] = mapCoordY(peak.n);
-  }
-
   // For display names, replace all spaces with non-breaking html entities
   for (var i = 0; i < data.peaks.length; i++) {
     var peak = data.peaks[i];
@@ -206,8 +201,8 @@ function setup() {
     16, // px, left margin
     16, // px, right margin
     4, // # columns
-    42, // px, gutter width
-    28 // # rows
+    round(42*s), // px, gutter width
+    floor(28*(1+abs(s-1)/2)) // # rows -- scale but not to the full extend
   );
   // Hide by default
   grid.togglevisibility();
@@ -260,15 +255,15 @@ function draw() {
     if (!bylineDiv) {
       var byline = "Explore the staggering amount of mapped and named peaks in the Swiss Alps. See how the four official languages contributed to the peaks’ names, and how a lesser known language has a surprising reach. Can you discover high peaks, that can be seen from different regions, and hence have multiple names?";
       bylineDiv = createDiv(byline).parent("centerContainer");
-      bylineDiv.size(grid.colwidth() + grid.gutter + grid.colwidth(), p5.AUTO);
     }
+    bylineDiv.size(grid.colwidth() + grid.gutter + grid.colwidth(), p5.AUTO);
     bylineDiv.position(grid.margin.left + grid.colwidth() + grid.gutter, grid.margin.top + yAdjustmentByline);
     if (!aboutDiv) {
       var about = "Data from <a href=\"https://shop.swisstopo.admin.ch/en/products/landscape/names3D\" target=\"_blank\">swisstopo</a><br><a data-toggle=\"modal\" href=\"#peaks-about-modal\">About this visualization</a>";
       aboutDiv = createDiv(about).class("about").parent("centerContainer");
-      var rightMargin = 60;
-      aboutDiv.size(grid.colwidth() - rightMargin, p5.AUTO);
     }
+    var rightMargin = 60;
+    aboutDiv.size(grid.colwidth() - rightMargin, p5.AUTO);
     aboutDiv.position(grid.margin.left + (grid.colwidth() + grid.gutter) * 3, grid.margin.top + yAdjustmentByline);
   }
 
@@ -279,7 +274,7 @@ function draw() {
   {
     noFill();
     stroke(darkColor);
-    strokeWeight(2);
+    strokeWeight(2*s);
     for (var i = 0; i < countryLines.length; i++) {
       var lineSegments = countryLines[i];
       beginShape();
@@ -295,7 +290,7 @@ function draw() {
   {
     strokeWeight(1.5);
     strokeCap(SQUARE);
-    var yAdjustment = -9;
+    var yAdjustment = -round(9*s);
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 3;
     var y = grid.margin.top + grid.rowheight() * (grid.nrow - 7) + yAdjustment;
     var w = 30;
@@ -309,7 +304,6 @@ function draw() {
         var name = namesForLangs[lang];
         var div = createDiv(name.toUpperCase()).id(lang).parent("centerContainer");
         div.class("peaks-label clickable rotated noselect");
-        div.position(xRunning+w/2+leftMargin, y-h-bottomMargin);
         div["hitRadius"] = max(w, h) / 2;
         div["isChecked"] = true;
         div.mouseClicked(function() {
@@ -318,35 +312,35 @@ function draw() {
         checkboxesForLangs[lang] = div;
         xRunning += w;
       }
-    } else {
-      for (var lang in checkboxesForLangs) {
-        var checkbox = checkboxesForLangs[lang];
-        checkbox["center"] = createVector(xRunning+w/2, y-h/2);
-        fill(checkbox.isChecked ? keyColors[lang] : disabledColor);
-        // checkbox
-        stroke(borderColor);
-        triangle(xRunning, y, xRunning+w/2, y-h, xRunning+w, y);
-        // checkmark
-        if (checkbox.isChecked) {
-          noFill();
-          stroke(foregroundColor);
-          beginShape();
-          {
-            var p1 = createVector(xRunning+13, y-8);
-            vertex(p1.x, p1.y);
-            var p2 = createVector(xRunning+19, y-8);
-            var v = p5.Vector.sub(p2, p1);
-            v.rotate(radians(45));
-            vertex(p1.x+v.x, p1.y+v.y);
-            // Oddly, 90° doesn't look parallel
-            v.rotate(radians(-88));
-            v.setMag(checkbox.size().width + leftMargin + bottomMargin);
-            vertex(p2.x+v.x, p2.y+v.y);
-          }
-          endShape();
+    }
+    for (var lang in checkboxesForLangs) {
+      var checkbox = checkboxesForLangs[lang];
+      checkbox.position(xRunning+w/2+leftMargin, y-h-bottomMargin);
+      checkbox["center"] = createVector(xRunning+w/2, y-h/2);
+      fill(checkbox.isChecked ? keyColors[lang] : disabledColor);
+      // checkbox
+      stroke(borderColor);
+      triangle(xRunning, y, xRunning+w/2, y-h, xRunning+w, y);
+      // checkmark
+      if (checkbox.isChecked) {
+        noFill();
+        stroke(foregroundColor);
+        beginShape();
+        {
+          var p1 = createVector(xRunning+13, y-8);
+          vertex(p1.x, p1.y);
+          var p2 = createVector(xRunning+19, y-8);
+          var v = p5.Vector.sub(p2, p1);
+          v.rotate(radians(45));
+          vertex(p1.x+v.x, p1.y+v.y);
+          // Oddly, 90° doesn't look parallel
+          v.rotate(radians(-88));
+          v.setMag(checkbox.size().width + leftMargin + bottomMargin);
+          vertex(p2.x+v.x, p2.y+v.y);
         }
-        xRunning += w;
+        endShape();
       }
+      xRunning += w;
     }
   }
 
@@ -371,7 +365,6 @@ function draw() {
         var name = namesForTypes[type];
         var div = createDiv(name.toUpperCase()).id(type).parent("centerContainer");
         div.class("peaks-label clickable rotated noselect");
-        div.position(x+w/2+leftMargin, y-h-bottomMargin);
         div["hitRadius"] = max(w, h) / 2;
         div["isChecked"] = true;
         div.mouseClicked(function() {
@@ -382,37 +375,37 @@ function draw() {
         w -= wDecrement;
         h -= hDecrement;
       }
-    } else {
-      for (var type in checkboxesForTypes) {
-        var checkbox = checkboxesForTypes[type];
-        checkbox["center"] = createVector(x+w/2, y-h/2);
-        fill(checkbox.isChecked ? typeColors[type] : disabledColor);
-        // checkbox
-        stroke(borderColor);
-        triangle(x, y, x+w/2, y-h, x+w, y);
-        // checkmark
-        if (checkbox.isChecked) {
-          noFill();
-          stroke(foregroundColor);
-          beginShape();
-          {
-            var p1 = createVector(x+13, y-8);
-            vertex(p1.x, p1.y);
-            var p2 = createVector(x+19, y-8);
-            var v = p5.Vector.sub(p2, p1);
-            v.rotate(radians(45));
-            vertex(p1.x+v.x, p1.y+v.y);
-            // Oddly, 90° doesn't look parallel
-            v.rotate(radians(-88));
-            v.setMag(sqrt(pow(w/2 + leftMargin + checkbox.size().width, 2) + pow(h, 2))*0.85);
-            vertex(p2.x+v.x, p2.y+v.y);
-          }
-          endShape();
+    }
+    for (var type in checkboxesForTypes) {
+      var checkbox = checkboxesForTypes[type];
+      checkbox.position(x+w/2+leftMargin, y-h-bottomMargin);
+      checkbox["center"] = createVector(x+w/2, y-h/2);
+      fill(checkbox.isChecked ? typeColors[type] : disabledColor);
+      // checkbox
+      stroke(borderColor);
+      triangle(x, y, x+w/2, y-h, x+w, y);
+      // checkmark
+      if (checkbox.isChecked) {
+        noFill();
+        stroke(foregroundColor);
+        beginShape();
+        {
+          var p1 = createVector(x+13, y-8);
+          vertex(p1.x, p1.y);
+          var p2 = createVector(x+19, y-8);
+          var v = p5.Vector.sub(p2, p1);
+          v.rotate(radians(45));
+          vertex(p1.x+v.x, p1.y+v.y);
+          // Oddly, 90° doesn't look parallel
+          v.rotate(radians(-88));
+          v.setMag(sqrt(pow(w/2 + leftMargin + checkbox.size().width, 2) + pow(h, 2))*0.85);
+          vertex(p2.x+v.x, p2.y+v.y);
         }
-        x += xOffset;
-        w -= wDecrement;
-        h -= hDecrement;
+        endShape();
       }
+      x += xOffset;
+      w -= wDecrement;
+      h -= hDecrement;
     }
   }
 
@@ -429,8 +422,10 @@ function draw() {
     var knobHeight = 10;
     if (!altitudeControl) {
       // Slight magic knob-related adjustments
-      altitudeControl = new RangeControl(x+knobWidth/2, y, w-knobWidth/2, h, knobWidth, knobHeight, data.zMin, data.zMax);
+      altitudeControl = new RangeControl(w-knobWidth/2, h, knobWidth, knobHeight, data.zMin, data.zMax);
     }
+    altitudeControl.x = x+knobWidth/2;
+    altitudeControl.y = y;
     altitudeControl.display();
     yRunning += knobHeight;
 
@@ -454,14 +449,14 @@ function draw() {
       cursorPopupDiv.hide();
     }
     noStroke();
-    var diameter = 2;
     // Has to be even (e.g. 4) for ellipse and stroke to perfectly line up
+    var diameter = 2*s;
     strokeWeight(diameter);
-    var highlightShadowOffset = 1.5;
+    var highlightShadowOffset = 1.5*s;
     var hoverPeaks = [];
     coloredPeaks = [];
     var isHighlighting = false;
-    var interactionDistance = 36;
+    var interactionDistance = 36*s;
     for (var i = 0; i < data.peaks.length; i++) {
       var peak = data.peaks[i];
       var type = peak.type;
@@ -553,8 +548,8 @@ function draw() {
       idleHoverNoiseVector.y += noiseStep;
       // The resulting value will always be between 0.0 and 1.0.
       var movementPadding = 100;
-      var idleHoverX = map(noise(idleHoverNoiseVector.x), 0, 1, peaksPadding.left+movementPadding, width-peaksPadding.right-movementPadding);
-      var idleHoverY = map(noise(idleHoverNoiseVector.y), 0, 1, peaksPadding.top+movementPadding, height-peaksPadding.bottom-movementPadding);
+      var idleHoverX = map(noise(idleHoverNoiseVector.x), 0, 1, round(peaksPadding.left*s)+movementPadding, width-round(peaksPadding.right*s)-movementPadding);
+      var idleHoverY = map(noise(idleHoverNoiseVector.y), 0, 1, round(peaksPadding.top*s)+movementPadding, height-round(peaksPadding.bottom*s)-movementPadding);
       for (var i = 0; i < coloredPeaks.length; i++) {
         var coloredPeak = coloredPeaks[i];
         var distance = dist(coloredPeak.x, coloredPeak.y, idleHoverX, idleHoverY);
@@ -619,8 +614,8 @@ function draw() {
     if (!languageShareTitleDiv) {
       languageShareTitleDiv = createDiv("Language Share of Peak Names").parent("centerContainer");
       languageShareTitleDiv.class("storytitle");
-      languageShareTitleDiv.size(grid.colwidth(), p5.AUTO);
     }
+    languageShareTitleDiv.size(grid.colwidth(), p5.AUTO);
     languageShareTitleDiv.position(x, y+storyTitleYAdjustment);
     yRunning += grid.rowheight();
 
@@ -629,8 +624,8 @@ function draw() {
     if (!namesPerLanguageDiv) {
       namesPerLanguageDiv = createDiv("NAMES PER LANGUAGE").parent("centerContainer");
       namesPerLanguageDiv.class("peaks-label");
-      namesPerLanguageDiv.position(x, yRunning+labelsYAdjustment);
     }
+    namesPerLanguageDiv.position(x, yRunning+labelsYAdjustment);
     // SHOW PER SPEAKERS toggle
     if (!showPerSpeakersDiv) {
       showPerSpeakersDiv = createDiv().id("showPerSpeakersDiv").parent("centerContainer");
@@ -660,7 +655,6 @@ function draw() {
         // Remember langCountSpan as property for easy access, couldn't make select() to work
         div["langCountSpan"] = langCountSpan;
         createSpan(Number(speakerCount).toLocaleString()).class("number safari_only_number").parent(div);
-        div.size(grid.colwidth(), grid.rowheight());
         // Remember count and speakerCount for sorting and bar scaling
         div["count"] = count;
         div["speakerCount"] = speakerCount;
@@ -687,6 +681,7 @@ function draw() {
     for (var i = 0; i < languagesDivs.length; i++) {
       var animating = false;
       var div = languagesDivs[i];
+      div.size(grid.colwidth(), grid.rowheight());
       // Pretty lame way of animating, but it does the job.
       var yStep = 6;
       var yCurrent = div.position().y;
@@ -740,8 +735,8 @@ function draw() {
     if (!topNamesTitleDiv) {
       topNamesTitleDiv = createDiv("Most Common Peak Names").parent("centerContainer");
       topNamesTitleDiv.class("storytitle");
-      topNamesTitleDiv.size(grid.colwidth(), p5.AUTO);
     }
+    topNamesTitleDiv.size(grid.colwidth(), p5.AUTO);
     topNamesTitleDiv.position(x, y+storyTitleYAdjustment);
     yRunning += grid.rowheight();
 
@@ -790,15 +785,14 @@ function draw() {
     if (!nameOriginTitleDiv) {
       nameOriginTitleDiv = createDiv("Horns, Teeth, and Pyramids").parent("centerContainer");
       nameOriginTitleDiv.class("storytitle");
-      nameOriginTitleDiv.size(grid.colwidth(), p5.AUTO);
     }
+    nameOriginTitleDiv.size(grid.colwidth(), p5.AUTO);
     nameOriginTitleDiv.position(x, y+storyTitleYAdjustment);
     yRunning += grid.rowheight();
 
     if (!nameOriginTextDiv) {
       nameOriginTextDiv = createDiv("").parent("centerContainer");
       nameOriginTextDiv.class("originstory");
-      nameOriginTextDiv.size(grid.colwidth(), p5.AUTO);
 
       // Color tags
       var spanForColorName = {};
@@ -823,6 +817,7 @@ function draw() {
       spanForColorName["black"].parent(nameOriginTextDiv);
       createSpan(" for dark forest or rock.").parent(nameOriginTextDiv);
     }
+    nameOriginTextDiv.size(grid.colwidth(), p5.AUTO);
     nameOriginTextDiv.position(x, yRunning);
   }
 }
@@ -866,71 +861,75 @@ function displayPopupForPeak(peak) {
  * Altitude Slider
  */
 
-function RangeControl(x, y, w, h, knobWidth, knobHeight, min, max) {
-  this.x = x;
-  this.y = y;
+function RangeControl(w, h, knobWidth, knobHeight, min, max) {
+  this.x = 0;
+  this.y = 0;
   this.w = w;
   this.h = h;
   this.min = min;
   this.max = max;
-  this.knobMin = new Knob(x+w, y+h, knobWidth, knobHeight, foregroundColor);
-  this.knobMax = new Knob(x, y+h, knobWidth, knobHeight, foregroundColor);
+  this.knobMin = new Knob(knobWidth, knobHeight, foregroundColor);
+  this.knobMax = new Knob(knobWidth, knobHeight, foregroundColor);
   this.minTextDiv = createDiv().class("altitude rotated noselect").parent("centerContainer");
   this.maxTextDiv = createDiv().class("altitude rotated noselect").parent("centerContainer");
   this.display = function() {
     // background line
     noFill();
     stroke(darkColor);
-    strokeWeight(h);
+    strokeWeight(this.h);
     strokeCap(SQUARE);
-    line(x, y+h/2, x+w, y+h/2);
+    line(this.x, this.y+this.h/2, this.x+this.w, this.y+this.h/2);
     // highlight line
     stroke(foregroundColor);
-    line(this.knobMax.x, y+h/2, this.knobMin.x, y+h/2);
+    line(this.knobMax.x+this.knobMax.xOffset, this.y+this.h/2, this.knobMin.x+this.knobMin.xOffset, this.y+this.h/2);
     // knobs
+    this.knobMin.x = this.x+this.w;
+    this.knobMin.y = this.y+this.h;
     this.knobMin.display();
+    this.knobMax.x = this.x;
+    this.knobMax.y = this.y+this.h;
     this.knobMax.display();
     // text
     this.minTextDiv.html(round(shouldShowInFeet ? this.minValue() / metersPerFoot : this.minValue()).toLocaleString() + altitudeUnitString());
     this.maxTextDiv.html(round(shouldShowInFeet ? this.maxValue() / metersPerFoot : this.maxValue()).toLocaleString() + altitudeUnitString());
     var xNudge = 6;
     var bottomMargin = 14;
-    this.minTextDiv.position(this.knobMin.x - xNudge, this.knobMin.y - bottomMargin);
-    this.maxTextDiv.position(this.knobMax.x - xNudge, this.knobMax.y - bottomMargin);
+    this.minTextDiv.position(this.knobMin.x+this.knobMin.xOffset - xNudge, this.knobMin.y - bottomMargin);
+    this.maxTextDiv.position(this.knobMax.x+this.knobMax.xOffset - xNudge, this.knobMax.y - bottomMargin);
   };
   this.update = function() {
     // Follow mouse, constrain, space out
     if (this.knobMin.isOn) {
-      this.knobMin.x = constrain(mouseX, this.knobMax.x + this.knobMax.w/2, this.knobMin.xInitial);
+      this.knobMin.xOffset = constrain(mouseX, this.knobMax.x + this.knobMax.w/2, this.knobMin.x) - this.knobMin.x;
     }
     if (this.knobMax.isOn) {
-      this.knobMax.x = constrain(mouseX, this.knobMax.xInitial, this.knobMin.x - this.knobMin.w/2);
+      this.knobMax.xOffset = constrain(mouseX, this.knobMax.x, this.knobMin.x - this.knobMin.w/2) - this.knobMax.x;
     }
   };
   this.minValue = function() {
-    return map(this.knobMin.x, this.knobMin.xInitial, this.knobMax.xInitial, this.min, this.max);
+    return map(this.knobMin.x+this.knobMin.xOffset, this.knobMin.x, this.knobMax.x, this.min, this.max);
   };
   this.maxValue = function() {
-    return map(this.knobMax.x, this.knobMax.xInitial, this.knobMin.xInitial, this.max, this.min);
+    return map(this.knobMax.x+this.knobMax.xOffset, this.knobMax.x, this.knobMin.x, this.max, this.min);
   };
 }
 
-function Knob(x, y, w, h) {
+function Knob(w, h) {
   // x and y are the coordinates of the tip
-  this.x = x;
-  this.y = y;
+  this.x = 0;
+  this.y = 0;
   this.w = w;
   this.h = h;
-  this.xInitial = x;
+  this.xOffset = 0;
   this.isOn = false;
   this.display = function() {
     fill(this.isOn ? pressedColor : foregroundColor);
     stroke(borderColor);
     strokeWeight(1.5);
-    triangle(this.x, this.y, this.x+w/2, this.y+this.h, this.x-w/2, this.y+this.h);
+    triangle(this.x+this.xOffset, this.y, this.x+this.xOffset+this.w/2, this.y+this.h, this.x+this.xOffset-this.w/2, this.y+this.h);
   };
   this.isClicked = function() {
-    return dist(this.x+w/2, this.y+this.h/2, mouseX, mouseY) < max(this.w, this.h);
+    return dist(this.x+this.xOffset+this.w/2, this.y+this.h/2, mouseX, mouseY) < max(this.w, this.h);
   };
 }
 
@@ -980,12 +979,43 @@ function mouseClicked() {
  * Helper Functions
  */
 
+function mapCoord() {
+  // Pre-project and flatten array of coordinates
+  countryLines = [];
+  var countryLine = topojson.feature(topo, topo.objects.ch);
+  for (var i = 0; i < countryLine.features.length; i++) {
+    var feature = countryLine.features[i];
+    var coords = feature.geometry.coordinates;
+    var lineSegments = [];
+    for (var j = 0; j < coords.length; j++) {
+      var coord = coords[j];
+      var x = mapCoordX(coord[0]);
+      var y = mapCoordY(coord[1]);
+      lineSegments.push(x);
+      lineSegments.push(y);
+    }
+    countryLines.push(lineSegments);
+  }
+
+  var lengthMin = round(3*s);
+  var lengthMax = round(140*s);
+  for (var i = 0; i < data.peaks.length; i++) {
+    var peak = data.peaks[i];
+    // Pre-calculate length of altitude lines
+    peak["length"] = map(peak.z, data.zMin, data.zMax, lengthMin, lengthMax);
+
+    // Pre-project peak E & N to X & Y
+    peak["x"] = mapCoordX(peak.e);
+    peak["y"] = mapCoordY(peak.n);
+  }
+}
+
 function mapCoordX(e) {
-  return map(e, data.eMin, data.eMax, peaksPadding.left, width - peaksPadding.right);
+  return map(e, data.eMin, data.eMax, round(peaksPadding.left*s), width - round(peaksPadding.right*s));
 }
 
 function mapCoordY(n) {
-  return map(n, data.nMax, data.nMin, peaksPadding.top, height - peaksPadding.bottom);
+  return map(n, data.nMax, data.nMin, round(peaksPadding.top*s), height - round(peaksPadding.bottom*s));
 }
 
 function altitudeUnitString() {
