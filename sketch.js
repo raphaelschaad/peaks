@@ -253,7 +253,7 @@ function draw() {
     var imageScaleFactor = isRetina() ? 0.5 : 1.0;
     image(logotypeImage, grid.margin.left, grid.margin.top + yAdjustmentLogoType, logotypeImage.width * imageScaleFactor, logotypeImage.height * imageScaleFactor);
     if (!bylineDiv) {
-      var byline = "Explore the staggering amount of mapped and named peaks in the Swiss Alps. See how the four official languages contributed to the peaks’ names, and how a lesser known language has a surprising reach. Can you discover high peaks, that can be seen from different regions, and hence have multiple names?";
+      var byline = "Explore the staggering amount of mapped and named peaks in the Swiss Alps. See how the four official languages contributed to the peaks’ names, and how a lesser-known language has a surprising reach. Can you discover high peaks, that can be seen from different regions, and hence have multiple names?";
       bylineDiv = createDiv(byline).parent("centerContainer");
     }
     bylineDiv.size(grid.colwidth() + grid.gutter + grid.colwidth(), p5.AUTO);
