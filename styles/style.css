@@ -234,7 +234,7 @@ _::-webkit-:not(:root:root), .safari_only_number {
 }
 
 /* Poor man's responsive font sizes */
-@media only screen and (min-width: 1400px) {
+@media only screen and (min-width: 1440px) {
   body {
     font-size: 11px;
   }
@@ -252,7 +252,7 @@ _::-webkit-:not(:root:root), .safari_only_number {
   }
 }
 
-@media only screen and (min-width: 1600px) {
+@media only screen and (min-width: 1560px) {
   body {
     font-size: 12px;
   }
@@ -267,5 +267,29 @@ _::-webkit-:not(:root:root), .safari_only_number {
   }
   .altitude {
     font-size: 11px;
+  }
+  .originstory {
+    line-height: 2.1;
+  }
+}
+
+@media only screen and (min-width: 1680px) {
+  body {
+    font-size: 13px;
+  }
+  .storytitle {
+    font-size: 17px;
+  }
+  .originstory {
+    line-height: 2.0;
+  }
+}
+
+@media only screen and (min-width: 1800px) {
+  body {
+    font-size: 14px;
+  }
+  .originstory {
+    line-height: 1.9;
   }
 }

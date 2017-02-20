@@ -95,10 +95,10 @@ var nameOriginTextDiv;
 // Scaling
 var s;
 var sMin = 1;
-var sMax = 1.3;
+var sMax = 1.5;
 
 function calcSize() {
-  s = map(windowWidth, 1280, 1680, sMin, sMax);
+  s = map(windowWidth, 1280, 1920, sMin, sMax);
   s = constrain(s, sMin, sMax);
   return {w: round(1024*s), h: round(640*s)};
 }
