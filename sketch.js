@@ -1,5 +1,8 @@
 "use strict";
 
+// Peaks is an interactive web-visualization of Swiss mountain names. https://raphaelschaad.github.io/peaks/
+// Copyright (c) 2016 Raphael Schaad
+
 // {
 //   "id": "...",
 //   "type": "gipfel",
