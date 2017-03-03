@@ -779,7 +779,7 @@ function draw() {
   }
 
 
-  // Story 3:
+  // Story 3: Peak Name Origins
   {
     var x = grid.margin.left + (grid.colwidth() + grid.gutter) * 2;
     var y = grid.margin.top + grid.rowheight() * storiesStartRow;
