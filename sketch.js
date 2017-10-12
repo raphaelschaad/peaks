@@ -521,8 +521,8 @@ function draw() {
         col = darkColor;
       }
       fill(col);
-      ellipse(x, y, diameter, diameter);
       // Moving from ellipse to point didn't improve performance
+      ellipse(x, y, diameter);
     }
   }
 
