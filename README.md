@@ -1,5 +1,5 @@
 # peaks
-*Peaks* is an interactive web-visualization of Swiss mountain names. Live project: https://raphaelschaad.github.io/peaks/
+*Peaks* is an interactive web-visualization of Swiss mountain names. Live site: https://raphaelschaad.github.io/peaks/
 
 ![Peaks screenshot](/images/peaks-screenshot.png?raw=true)
 
